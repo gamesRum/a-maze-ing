@@ -27,6 +27,8 @@
       var currentPlayer = players.get(playerId),
         playerData = {
           id: currentPlayer.id,
+          direction: player.direction,
+          type: player.type,
           location: {
             x: currentPlayer.location.x,
             y: currentPlayer.location.y
@@ -57,6 +59,8 @@
     this._sendToRoom(events.otherPlayerEnter, {
       id: player.id,
       name: player.name,
+      direction: player.direction,
+      type: player.type,
       location: {
         x: player.location.x,
         y: player.location.y
@@ -73,6 +77,8 @@
     if (nextToDo === 1) { // Walking
       update = {
         id: player.id,
+        direction: player.direction,
+        type: player.type,
         location: {
           x: player.location.x,
           y: player.location.y
@@ -95,6 +101,8 @@
       this._sendToRoom(events.otherPlayerEnter, {
         id: player.id,
         name: player.name,
+        direction: player.direction,
+        type: player.type,
         location: {
           x: player.location.x,
           y: player.location.y
@@ -117,6 +125,20 @@
   Events.prototype.returnMap = function(socket) {
     var player = this.player;
     socket.emit(events.reRenderMap, rooms.get(player.room).json);
+  };
+
+  Events.prototype.returnPlayer = function(socket) {
+    var player = this.player,
+      update = {
+        id: player.id,
+        direction: player.direction,
+        type: player.type,
+        location: {
+          x: player.location.x,
+          y: player.location.y
+        }
+      };
+    socket.emit('player_update', update);
   };
 
   module.exports = Events;
