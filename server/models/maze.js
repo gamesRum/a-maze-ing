@@ -8,12 +8,12 @@
     return Math.floor(Math.random() * max);
   }
 
-  function MazeGenerator(height, width, multiplicator) {
+  function MazeGenerator(height, width, multiplicator, exits) {
     var maze = [];
     for (var i = 0; i < height; i += 1) {
       maze[i] = [];
       for (var j = 0; j < width; j += 1) {
-        maze[i][j] = 1;
+        maze[i][j] = 2;
       }
     }
     var row = nextInt(height);
@@ -24,11 +24,15 @@
     while (column % 2 === 0) {
       column = nextInt(width);
     }
-    maze[row][column] = 0;
+    maze[row][column] = 1;
     generateWorld(row, column, maze, height, width, 2);
-    // addExit(maze, width, height, 2);
+
+    if (exits > 0 && exits < 5) {
+      addExit(maze, width, height, exits);
+    }
+
     maze = growIt(maze, multiplicator);
-    replaceForObjects(maze);
+    // replaceForObjects(maze);
     return maze;
   }
 
@@ -60,9 +64,9 @@
           if (row - 2 < 0) {
             continue;
           }
-          if (maze[row - 2][col] !== 0) {
-            maze[row - 2][col] = 0;
-            maze[row - 1][col] = 0;
+          if (maze[row - 2][col] !== 1) {
+            maze[row - 2][col] = 1;
+            maze[row - 1][col] = 1;
             generateWorld(row - 2, col, maze, height, width);
           }
           break;
@@ -70,9 +74,9 @@
           if (col + 2 > width - 1) {
             continue;
           }
-          if (maze[row][col + 2] !== 0) {
-            maze[row][col + 2] = 0;
-            maze[row][col + 1] = 0;
+          if (maze[row][col + 2] !== 1) {
+            maze[row][col + 2] = 1;
+            maze[row][col + 1] = 1;
             generateWorld(row, col + 2, maze, height, width);
           }
           break;
@@ -80,9 +84,9 @@
           if (row + 2 > height - 1) {
             continue;
           }
-          if (maze[row + 2][col] !== 0) {
-            maze[row + 2][col] = 0;
-            maze[row + 1][col] = 0;
+          if (maze[row + 2][col] !== 1) {
+            maze[row + 2][col] = 1;
+            maze[row + 1][col] = 1;
             generateWorld(row + 2, col, maze, height, width);
           }
           break;
@@ -90,9 +94,9 @@
           if (col - 2 <= 0) {
             continue;
           }
-          if (maze[row][col - 2] !== 0) {
-            maze[row][col - 2] = 0;
-            maze[row][col - 1] = 0;
+          if (maze[row][col - 2] !== 1) {
+            maze[row][col - 2] = 1;
+            maze[row][col - 1] = 1;
             generateWorld(row, col - 2, maze, height, width);
           }
           break;
@@ -150,28 +154,27 @@
    * @exits - number of exits [1-4]
    */
   function addExit(maze, width, height, exits) {
+    var randDirs = randomDirections();
     if (typeof exits !== 'number' || exits > 4) return;
     for (var i = 0; i < exits; i += 1) {
       var xHalf = Math.floor(width / 2);
       var yHalf = Math.floor(height / 2);
       switch (randDirs.pop()) {
         case 1:
-          maze[xHalf][0] = 0;
+          maze[xHalf][0] = 1;
           break;
         case 2:
-          maze[xHalf][height - 1] = 0;
+          maze[xHalf][height - 1] = 1;
           break;
         case 3:
-          maze[0][yHalf] = 0;
+          maze[0][yHalf] = 1;
           break;
         case 4:
-          maze[width - 1][yHalf] = 0;
+          maze[width - 1][yHalf] = 1;
           break;
       }
     }
   }
 
-  module.exports = function(height, width, multiplicator) {
-    return new MazeGenerator(height, width, multiplicator);
-  };
+  module.exports = MazeGenerator;
 })(module || this);
